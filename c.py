@@ -5,11 +5,10 @@ import math
 import matplotlib.pyplot as plt, mpld3
 
 
-
 app = Flask(__name__)
 app.config["DEBUG"] = True
 
-@app.route("/", methods=["POST"])
+@app.route("/", methods=["GET", "POST"])
 def adder_page():
     errors = ""
     if request.method == "POST":
@@ -32,13 +31,9 @@ def adder_page():
             fn = 1/(2*math.pi)*wd
             q = 1/(2*dpratio)
             tr = 0
-
-
-
-
-            result=(wn,fn,T,cc,c,wd,fn,q,tr)
-            #return f"<img src='data:image/png;base64,{data}'/>"
-
+            plt.plot(wn,q,'+')
+            plt.savefig('plot.png')
+            result=(wn,fn,T,cc,c,wd,fn,q,tr,'plot.png')
             return '''
                 <html>
                     <body>
@@ -51,6 +46,7 @@ def adder_page():
                         <p>Damped natural frequency [fd] is: {result[6]}</p>
                         <p>Quality factor [Q] is: {result[7]}</p>
                         <p>Transmissiblity [TR] is: {result[8]}</p>
+                        <img src=""{{"plot.png"}}">
                         <p><a href="/">Click here to calculate again</a>
                     </body>
                 </html>
@@ -94,6 +90,7 @@ def adder_page():
             plt.ylabel('Transmissiblity [TR]')
             html_text = mpld3.fig_to_html(fig)
             result=(wn,fn,T,cc,c,wd,fn,q,tr,html_text)
+            #result=(wn,fn,T,cc,c,wd,fn,q,tr)
             return '''
                     <html>
                         <body>
@@ -106,8 +103,8 @@ def adder_page():
                             <p>Damped natural frequency [fd] is: {result[6]}</p>
                             <p>Quality factor [Q] is: {result[7]}</p>
                             <p>Transmissiblity [TR] is: {result[8]}</p>
-                            {result[9]}
                             <p><a href="/">Click here to calculate again</a>
+                            {result[9]}
                             </body>
                             </html>
             '''.format(result=result)
@@ -157,3 +154,4 @@ def adder_page():
 if __name__ == '__main__':
     app.debug = True
     app.run()
+
